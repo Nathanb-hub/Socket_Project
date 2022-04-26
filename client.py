@@ -1,7 +1,6 @@
 import socket 
 import sys
 
-
 HOST = socket.gethostbyname(socket.gethostname())
 PORT = 5566 # localhost est l'adresse du serveur local equivalent a l'ip 127.0.0.1
 
@@ -36,37 +35,13 @@ class Chat:
         client.sendall(request)
         self._receive()
 
+    def _client_options(self):
+        print("1 : Envoyer un message")
+        print("2 : Relever les derniers messages")
+        print("3 : Quitter")
 
 
-try:
-    chat = Chat()
-    try:
-        cmd = sys.argv[1]
-    except IndexError:
-        cmd = '_receive'
-    try:
-        param = sys.argv[2]
-    except IndexError:
-        param = ''
-    
-    if len(sys.argv)>3:
-        e = 3 
-        while e < len(sys.argv):
-            param = param + ' ' + sys.argv[e]
-            e+=1
-
-    handlers = {'send':chat._send,'receive':chat._receive,'connected':chat._connectedPeople}
-    if cmd in handlers:
-        handlers[cmd]() if param == '' else handlers[cmd](param)
 
 
-    # recevoir des données
 
-    while running:
-        chat._receive()
 
-except Exception as e:
-    print("Connexion échouée", e)
-
-finally:
-    client.close()

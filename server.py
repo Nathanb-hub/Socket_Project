@@ -37,11 +37,6 @@ class ClientsHandling(threading.Thread):
 
             
 
-
-        
-
-
-
 # boucle infinie pour que le serveur ecoute tant qu'une machine est connectée
 while True:
     server.listen(5) # le parametre est le nombre de connexion qui peuvent échouer avant de refuser d'autres connexions
