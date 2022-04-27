@@ -24,7 +24,7 @@ class ClientsHandling(threading.Thread):
     def run(self):
         data = self.conn.recv(1024) # taille de reception de données 
         data = data.decode("utf-8")
-        print(data)
+        #print("Data : \n",data)
         self.clients[(self.host,self.port)] = data
         print(self.clients)
         if data =='c':
