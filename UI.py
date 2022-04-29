@@ -13,53 +13,14 @@ ________________________________________________________________________________
 """
 import socket 
 import sys
+import json
+from Send import Send
 
 HOST = socket.gethostbyname(socket.gethostname())
 PORT = 5566 # localhost est l'adresse du serveur local equivalent a l'ip 127.0.0.1
 
 client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 running = True
-
-
-
-
-class Send:
-    def __init__(self):
-        
-        print("Client connecté !")
-
-        
-    def _connect_to_server(self):
-        client.connect((HOST,PORT)) # pour connecter le client au serveur
-        self.conn = ((HOST,PORT)) 
-    def _receive(self):
-        # pour recevoir des données
-        data = client.recv(1024) # taille de reception de données 
-        data = data.decode("utf-8")
-        if len(data)>0:
-            print("Reponse du serveur :")
-            print(data)
-            running = False
-
-    
-    def _send(self,msg_dict):
-        
-        data = str(msg_dict).encode("utf-8")
-        client.sendall(data)
-        print(data)
-
-    def _connectedPeople(self):
-        request = "c".encode("utf8")
-        client.sendall(request)
-        self._receive()
-
-    def _client_options(self):
-        print("1 : Envoyer un message")
-        print("2 : Relever les derniers messages")
-        print("3 : Quitter")
-
-
-
 
 
 
@@ -86,7 +47,7 @@ send = Send()
 class TestApp(App):
     def login(self,instance):
         """faire une form validation avec regex"""
-
+        self.connect_to_server(instance)
         #stocker les users dans un json
         if (len(self.username.text)!=0) and (len(self.password.text)>5):
             self.page_manager(instance)
@@ -95,18 +56,20 @@ class TestApp(App):
             self.info.text = "Infos non valides"
 
     def connect_to_server(self,instance):
-        try:
-            send._connect_to_server()
-        except Exception():
-            print("Already connected")
+        send._connect_to_server()
 
-    def send(self,instance):
-        # verifier qu'on soit connecter au serveur 
-        try:
-            send._send({'From':self.username.text,'message':self.message.text,'destinator':self.destinator.text})
-        except:
-            print("Not connected to server")
-            self.send_info.text="Not connected to server"
+    
+    # def send(self,instance):
+    #     # verifier qu'on soit connecter au serveur 
+    #     send._send({'Username':self.username.text,'message':self.message.text,'destinator':self.destinator.text})
+    #     try:
+    #         if len(self.message.text)==0:
+    #             send._send({'Username':self.username.text})
+    #         else:
+    #             send._send({'Username':self.username.text,'message':self.message.text,'destinator':self.destinator.text})
+    #     except:
+    #         print("Not connected to server")
+    #         self.send_info.text="Not connected to server"
 
     def page_manager(self,instance):
         pages = {'_login':'loginScreen','_send':'sendScreen'}
@@ -167,14 +130,18 @@ class TestApp(App):
 
         header_buttons = BoxLayout(orientation="horizontal")
         connect = Button(text="Connexion",size_hint=(0.3,0.2),color=green,background_color=white)
+        connect.id =self.username
         connect.bind(on_press=self.connect_to_server)
-        dontKnow = Button(text="dontKnow",size_hint=(0.3,0.2),color=white,background_color=white)
-        dontKnow.bind(on_press=self.connect_to_server)
+        connecteds = Button(text="Show connected people",size_hint=(0.3,0.2),color=white,background_color=white)
+        #connecteds.bind(on_press=self.connected_people)
+        self.connected_people_list = Label(text='')
+
+
         login = Button(text="Back to login",size_hint=(0.3,0.2),color=blue,background_color=white)
         login.id = "_login"
         login.bind(on_press=self.page_manager)
         header_buttons.add_widget(connect)
-        header_buttons.add_widget(dontKnow)
+        header_buttons.add_widget(connecteds)
         header_buttons.add_widget(login)
 
 
@@ -189,6 +156,7 @@ class TestApp(App):
 
 
         send_layout.add_widget(header_buttons)
+        send_layout.add_widget(self.connected_people_list)
         send_layout.add_widget(sender_label)
         send_layout.add_widget(self.message)
         send_layout.add_widget(receiver_label)
