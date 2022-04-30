@@ -12,13 +12,13 @@ class Chat:
     def __init__(self):
         client.connect((HOST,PORT)) # pour connecter le client au serveur
         self.conn = ((HOST,PORT)) 
-        print("Client connecté !")
+        print("Client connecte !")
 
         
 
     def _receive(self):
-        # pour recevoir des données
-        data = client.recv(1024) # taille de reception de données 
+        # pour recevoir des donnees
+        data = client.recv(1024) # taille de reception de donnees 
         data = data.decode("utf-8")
         if len(data)>0:
             print("Reponse du serveur :")
@@ -60,13 +60,13 @@ try:
         handlers[cmd]() if param == '' else handlers[cmd](param)
 
 
-    # recevoir des données
+    # recevoir des donnees
 
     while running:
         chat._receive()
 
 except Exception as e:
-    print("Connexion échouée", e)
+    print("Connexion echouee", e)
 
 finally:
     client.close()
