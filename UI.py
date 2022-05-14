@@ -5,6 +5,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.textinput import TextInput
 from kivy.uix.image import Image
+import Send
 
 
 
@@ -59,17 +60,17 @@ class TestApp(App):
         send._connect_to_server()
 
     
-    # def send(self,instance):
-    #     # verifier qu'on soit connecter au serveur 
-    #     send._send({'Username':self.username.text,'message':self.message.text,'destinator':self.destinator.text})
-    #     try:
-    #         if len(self.message.text)==0:
-    #             send._send({'Username':self.username.text})
-    #         else:
-    #             send._send({'Username':self.username.text,'message':self.message.text,'destinator':self.destinator.text})
-    #     except:
-    #         print("Not connected to server")
-    #         self.send_info.text="Not connected to server"
+    def send(self,instance):
+        # verifier qu'on soit connecter au serveur 
+        send._send({'Username':self.username.text,'message':self.message.text,'destinator':self.destinator.text})
+        try:
+            if len(self.message.text)==0:
+                send._send({'Username':self.username.text})
+            else:
+                send._send({'Username':self.username.text,'message':self.message.text,'destinator':self.destinator.text})
+        except:
+            print("Not connected to server")
+            self.send_info.text="Not connected to server"
 
     def page_manager(self,instance):
         pages = {'_login':'loginScreen','_send':'sendScreen'}
