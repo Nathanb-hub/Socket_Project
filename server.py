@@ -5,7 +5,7 @@ import json
 
 
 SERVER = socket.gethostbyname(socket.gethostname())
-PORT = 5566 # le serveur n'a pas besoin d'adresse car il ne fait qu'ecouter
+PORT = 5577 # le serveur n'a pas besoin d'adresse car il ne fait qu'ecouter
 
 server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 server.bind((SERVER, PORT))
@@ -14,7 +14,7 @@ _connected_people = []
 
 
 # pour gerer plusieur connexion de client simultanément 
-class ClientsHandling(threading.Thread): 
+class AppServer(threading.Thread): 
     # elle hérite de thread
     def __init__(self,conn,addr,client = {}):
         threading.Thread.__init__(self)
@@ -26,9 +26,15 @@ class ClientsHandling(threading.Thread):
     def _connected_people(self):
         #il faut envoyer au client la liste _connected_people
         print("il faut envoyer au client la liste _connected_people")
+
+    def _reply(self):
+        pass
+
+    def _receive(self):
+        pass
         
     def run(self):
-        handlers = {'reply':self._reply,'receive':self._receive,'connected':self._connectedPeople}
+        handlers = {'reply':self._reply,'receive':self._receive,'connected':self._connected_people}
         data = self.conn.recv(1024) # taille de reception de données 
         data = data.decode("utf-8")
         #analyser le message recu
@@ -58,7 +64,7 @@ while True:
     
 
 
-    my_thread = ClientsHandling(conn,addr)
+    my_thread = AppServer(conn,addr)
     my_thread.start() # appelle la méthode run de la classe ClientsHandling
    
 

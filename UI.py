@@ -4,8 +4,9 @@ from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.textinput import TextInput
+from kivy.uix.spinner import Spinner
 from kivy.uix.image import Image
-import Send
+import Client_Handling
 
 
 
@@ -15,12 +16,10 @@ ________________________________________________________________________________
 import socket 
 import sys
 import json
-from Send import Send
+from Client_Handling import Client_Handling
 
-HOST = socket.gethostbyname(socket.gethostname())
-PORT = 5566 # localhost est l'adresse du serveur local equivalent a l'ip 127.0.0.1
 
-client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+
 running = True
 
 
@@ -38,39 +37,46 @@ blue = [0, 0, 1, 1]
 purple = [1, 0, 1, 1] 
 
 sm = ScreenManager()
-send = Send()
+client = Client_Handling()
 
 
 
 
 
 
-class TestApp(App):
+class UserApp(App):
     def login(self,instance):
         """faire une form validation avec regex"""
-        self.connect_to_server(instance)
+        
         #stocker les users dans un json
         if (len(self.username.text)!=0) and (len(self.password.text)>5):
             self.page_manager(instance)
+            if not(self.connected):
+                self.connect_to_server(instance)
+                self.registerClient_ToServer()
             #print(self.username.text,self.password.text)
         else: 
             self.info.text = "Infos non valides"
 
     def connect_to_server(self,instance):
-        send._connect_to_server()
+        client._connect_to_server()
+        self.connected = True
+    
+    def registerClient_ToServer(self):
+        if self.connected:
+            client._send({'Username':self.username.text})
+            print("Client connecté au serveur")
 
     
     def send(self,instance):
         # verifier qu'on soit connecter au serveur 
-        send._send({'Username':self.username.text,'message':self.message.text,'destinator':self.destinator.text})
-        try:
-            if len(self.message.text)==0:
-                send._send({'Username':self.username.text})
-            else:
-                send._send({'Username':self.username.text,'message':self.message.text,'destinator':self.destinator.text})
-        except:
-            print("Not connected to server")
-            self.send_info.text="Not connected to server"
+        if self.connected:
+            print("La on est bien ")
+            # client._send({'Username':self.username.text,'message':self.message.text,'destinator':self.destinator.text})
+
+    def connected_people_list(self):
+        if self.connected:
+            client._send({'_connected':connected_people,'Username':self.username.text,'message':self.message.text,'destinator':self.destinator.text})
 
     def page_manager(self,instance):
         pages = {'_login':'loginScreen','_send':'sendScreen'}
@@ -81,6 +87,7 @@ class TestApp(App):
         #Initialisation des variables 
         self.contacts = []
         self.ids = {}
+        self.connected = False
 
         """
                 SCREEN FOR LOGIN 
@@ -130,18 +137,15 @@ class TestApp(App):
         send_layout = BoxLayout(orientation='vertical',size_hint=(0.8,0.6),pos_hint={'center_x':0.5,'center_y':0.5})#pos_hint={'center_x':0.5,'center_y':0.5}
 
         header_buttons = BoxLayout(orientation="horizontal")
-        connect = Button(text="Connexion",size_hint=(0.3,0.2),color=green,background_color=white)
-        connect.id =self.username
-        connect.bind(on_press=self.connect_to_server)
-        connecteds = Button(text="Show connected people",size_hint=(0.3,0.2),color=white,background_color=white)
-        #connecteds.bind(on_press=self.connected_people)
-        self.connected_people_list = Label(text='')
+        print(self.connected_people_list())
+        connecteds = Spinner(text="Connected Peoples",values= ['Michel','Donovan'],size_hint=(0.3,0.2),color=green,background_color=white)
+        # connecteds.bind(on_press=self.connected_people_list)
+
 
 
         login = Button(text="Back to login",size_hint=(0.3,0.2),color=blue,background_color=white)
         login.id = "_login"
         login.bind(on_press=self.page_manager)
-        header_buttons.add_widget(connect)
         header_buttons.add_widget(connecteds)
         header_buttons.add_widget(login)
 
@@ -157,7 +161,7 @@ class TestApp(App):
 
 
         send_layout.add_widget(header_buttons)
-        send_layout.add_widget(self.connected_people_list)
+        # send_layout.add_widget(self.connected_people_list)
         send_layout.add_widget(sender_label)
         send_layout.add_widget(self.message)
         send_layout.add_widget(receiver_label)
@@ -222,4 +226,4 @@ class TestApp(App):
 #     client.close()
 
 
-TestApp().run()
+UserApp().run()

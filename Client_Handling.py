@@ -1,8 +1,15 @@
 # Transfert de données au serveur 
 
 import json
+import socket
 
-class Send:
+
+HOST = socket.gethostbyname(socket.gethostname())
+PORT = 5577 # localhost est l'adresse du serveur local equivalent a l'ip 127.0.0.1
+
+client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+
+class Client_Handling:
     def __init__(self):
         pass
     
@@ -16,7 +23,6 @@ class Send:
     
     def _send(self,msg_dict):
         data = json.dumps(msg_dict).encode("utf-8")
-
         try:
             client.sendall(data)
             print(data)
@@ -24,6 +30,7 @@ class Send:
             self._connect_to_server()
             self._send(msg_dict)
             print(data)
+
 
     # def _receive(self):
     #     # pour recevoir des données
