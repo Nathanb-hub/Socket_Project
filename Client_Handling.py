@@ -32,22 +32,42 @@ class Client_Handling:
             print(data)
 
 
-    # def _receive(self):
-    #     # pour recevoir des données
-    #     data = client.recv(1024) # taille de reception de données 
-    #     data = data.decode("utf-8")
-    #     if len(data)>0:
-    #         print("Reponse du serveur :")
-    #         print(data)
-    #         running = False
+    def _receive(self):
+        # pour recevoir des données
+        data = client.recv(1024) # taille de reception de données 
+        data = data.decode("utf-8")
+        if len(data)>0:
+            print("Reponse du serveur :")
+            print(data)
+            # running = False
+            data = json.loads(data)
+            return data
+        
+
+        
 
     
 
 
     def _connectedPeople(self):
-        request = "_connected_peoples".encode("utf8")
-        client.sendall(request)
-        self._receive()
+        msg_dict = {'_connected':"Ca fonctionne ?"}
+        data = json.dumps(msg_dict).encode("utf-8")
+        client.sendall(data)
+        data = self._receive()
+        print("Le contenu de receive :",data)
+        return data
+       
+
+
+
+
+
+
+
+
+        # request = "_connected_peoples".encode("utf8")
+        # client.sendall(request)
+        # self._receive()
 
     # def _client_options(self):
     #     print("1 : Envoyer un message")

@@ -52,13 +52,12 @@ class UserApp(App):
         if (len(self.username.text)!=0) and (len(self.password.text)>5):
             self.page_manager(instance)
             if not(self.connected):
-                self.connect_to_server(instance)
                 self.registerClient_ToServer()
             #print(self.username.text,self.password.text)
         else: 
             self.info.text = "Infos non valides"
 
-    def connect_to_server(self,instance):
+    def connect_to_server(self):
         client._connect_to_server()
         self.connected = True
     
@@ -71,12 +70,18 @@ class UserApp(App):
     def send(self,instance):
         # verifier qu'on soit connecter au serveur 
         if self.connected:
+
             print("La on est bien ")
             # client._send({'Username':self.username.text,'message':self.message.text,'destinator':self.destinator.text})
 
     def connected_people_list(self):
         if self.connected:
-            client._send({'_connected':connected_people,'Username':self.username.text,'message':self.message.text,'destinator':self.destinator.text})
+            data = client._connectedPeople()
+            self.online_persons = data
+               
+
+            
+            
 
     def page_manager(self,instance):
         pages = {'_login':'loginScreen','_send':'sendScreen'}
@@ -88,7 +93,8 @@ class UserApp(App):
         self.contacts = []
         self.ids = {}
         self.connected = False
-
+        self.connect_to_server()
+        self.online_persons = {}
         """
                 SCREEN FOR LOGIN 
         """
@@ -137,8 +143,15 @@ class UserApp(App):
         send_layout = BoxLayout(orientation='vertical',size_hint=(0.8,0.6),pos_hint={'center_x':0.5,'center_y':0.5})#pos_hint={'center_x':0.5,'center_y':0.5}
 
         header_buttons = BoxLayout(orientation="horizontal")
-        print(self.connected_people_list())
-        connecteds = Spinner(text="Connected Peoples",values= ['Michel','Donovan'],size_hint=(0.3,0.2),color=green,background_color=white)
+        print("Must get connected peoples")
+        self.connected_people_list()
+        print("ONLINE_PERSONS :")
+        print(self.online_persons.values())
+        persons = self.online_persons.values()
+        # for k,v in self.online_persons:
+        #     print("Client number:",k)
+        #     print("Name: ",v)
+        connecteds = Spinner(text="Connected Peoples",values= persons,size_hint=(0.3,0.2),color=green,background_color=white)
         # connecteds.bind(on_press=self.connected_people_list)
 
 
