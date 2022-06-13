@@ -25,11 +25,9 @@ class Client_Handling:
         data = json.dumps(msg_dict).encode("utf-8")
         try:
             client.sendall(data)
-            print(data)
         except:
             self._connect_to_server()
-            self._send(msg_dict)
-            print(data)
+            client.sendall(data)
 
 
     def _receive(self):
@@ -37,33 +35,17 @@ class Client_Handling:
         data = client.recv(1024) # taille de reception de données 
         data = data.decode("utf-8")
         if len(data)>0:
-            print("Reponse du serveur :")
-            print(data)
-            # running = False
             data = json.loads(data)
             return data
         
 
-        
-
-    
-
-
     def _connectedPeople(self):
-        msg_dict = {'_connected':"Ca fonctionne ?"}
+        msg_dict = {'_connected':""}
         data = json.dumps(msg_dict).encode("utf-8")
         client.sendall(data)
         data = self._receive()
-        print("Le contenu de receive :",data)
         return data
        
-
-
-
-
-
-
-
 
         # request = "_connected_peoples".encode("utf8")
         # client.sendall(request)
